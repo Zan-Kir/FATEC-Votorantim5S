@@ -5,21 +5,39 @@ import { TextInput, Divider, Text } from "react-native-paper";
 export default function App() {
   const [cep, setCep] = useState("");
 
-  const [dadosCep, setDadosCep] = useState([]);
+  // dadosCep: null = nenhum resultado, object = dados do viacep
+  const [dadosCep, setDadosCep] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const buscaCep = (value) => {
-    let url = `https://viacep.com.br/ws/${value}/json/`;
-    let formataCep = value.replace(/\D/g, "");
+    const formataCep = value.replace(/\D/g, "");
+    setError("");
+
+    if (formataCep.length !== 8) {
+      setDadosCep(null);
+      setError("CEP inválido. Informe 8 dígitos.");
+      return;
+    }
+
+    const url = `https://viacep.com.br/ws/${formataCep}/json/`;
+    setLoading(true);
     fetch(url)
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        setDadosCep(data);
+        setLoading(false);
+        if (data.erro) {
+          setDadosCep(null);
+          setError("CEP não encontrado.");
+        } else {
+          setDadosCep(data);
+        }
       })
-      .catch((error) => {
-        console.error("Erro ao buscar CEP:", error);
+      .catch((err) => {
+        console.error("Erro ao buscar CEP:", err);
+        setLoading(false);
+        setDadosCep(null);
+        setError("Erro ao buscar CEP. Tente novamente.");
       });
   };
 
@@ -27,108 +45,74 @@ export default function App() {
     <View style={styles.container}>
       <Text>Digite o CEP:</Text>
       <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          width: 200,
-          marginTop: 10,
-        }}
+        style={styles.cepInput}
         label="CEP"
-        placeholder="123456789"
+        placeholder="12345678"
         keyboardType="numeric"
-        onChangeText={(text) => {
-          setCep(text);
-        }}
+        value={cep}
+        maxLength={9}
+        onChangeText={(text) => setCep(text)}
       />
-      <Pressable onPress={() => buscaCep(cep)}>
-        <Text
-          style={{
-            padding: 10,
-            backgroundColor: "blue",
-            color: "white",
-            marginTop: 10,
-            borderRadius: 5,
-          }}
-        >
-          Busca CEP
-        </Text>
+
+      <Pressable onPress={() => buscaCep(cep)} style={styles.searchButton}>
+        <Text style={styles.searchButtonText}>{loading ? 'Buscando...' : 'Buscar CEP'}</Text>
       </Pressable>
 
-      {dadosCep.length === 0 ? (
-        <Text>CEP não encontrado</Text>
-      ) : (
-        <View
-          style={{
-            marginTop: 20,
-            backgroundColor: "lightgray",
-            padding: 10,
-            borderRadius: 5,
-          }}
-        >
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+      {dadosCep ? (
+        <View style={styles.card}>
           <TextInput
             label="Rua"
-            value={dadosCep.logradouro}
+            value={dadosCep.logradouro ?? ""}
             style={{ marginBottom: 10 }}
             editable={false}
-            onChangeText={(text) =>
-              setDadosCep({ ...dadosCep, logradouro: text })
-            }
           />
-          <TextInput
+          {/* <TextInput
             label="Número"
-            value={dadosCep.numero}
+            value={dadosCep.numero ?? ""}
             style={{ marginBottom: 10 }}
-            editable={false}
+            editable={true}
             onChangeText={(text) => setDadosCep({ ...dadosCep, numero: text })}
-          />
+          /> */}
           <TextInput
             label="Bairro"
-            value={dadosCep.bairro}
+            value={dadosCep.bairro ?? ""}
             style={{ marginBottom: 10 }}
             editable={false}
-            onChangeText={(text) => setDadosCep({ ...dadosCep, bairro: text })}
           />
-          <TextInput
+          {/* <TextInput
             label="Complemento"
-            value={dadosCep.complemento}
+            value={dadosCep.complemento ?? ""}
             style={{ marginBottom: 10 }}
-            editable={false}
-            onChangeText={(text) =>
-              setDadosCep({ ...dadosCep, complemento: text })
-            }
-          />
+            editable={true}
+            onChangeText={(text) => setDadosCep({ ...dadosCep, complemento: text })}
+          /> */}
           <TextInput
             label="Cidade"
-            value={dadosCep.localidade}
+            value={dadosCep.localidade ?? ""}
             style={{ marginBottom: 10 }}
             editable={false}
-            onChangeText={(text) =>
-              setDadosCep({ ...dadosCep, localidade: text })
-            }
           />
           <TextInput
             label="Estado"
-            value={dadosCep.uf}
+            value={dadosCep.uf ?? ""}
             style={{ marginBottom: 10 }}
             editable={false}
-            onChangeText={(text) => setDadosCep({ ...dadosCep, uf: text })}
           />
-          <Pressable style={{ marginTop: 10 }}>
-            <Text
-              style={{
-                padding: 10,
-                backgroundColor: "red",
-                color: "white",
-                borderRadius: 5,
-                width: 100,
-              }}
-            >
-              Deletar
-            </Text>
+
+          <Pressable
+            style={styles.clearButton}
+            onPress={() => {
+              setCep("");
+              setDadosCep(null);
+              setError("");
+            }}
+          >
+            <Text style={styles.clearButtonText}>Limpar</Text>
           </Pressable>
         </View>
-      )}
+      ) : null}
     </View>
   );
 }
@@ -137,6 +121,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    marginTop: 60,
+    alignItems: "center",
+    paddingHorizontal: 20,
     marginTop: 100,
   },
+  cepInput: {
+    height: 50,
+    width: 300,
+    marginTop: 10,
+    backgroundColor: 'white'
+  },
+  searchButton: {
+    marginTop: 12,
+    backgroundColor: '#1976D2',
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 6,
+  },
+  searchButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    textAlign: 'center'
+  },
+  errorText: {
+    color: '#c62828',
+    marginTop: 8,
+  },
+  card: {
+    marginTop: 20,
+    backgroundColor: '#f2f2f2',
+    padding: 14,
+    borderRadius: 8,
+    width: 320,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  clearButton: {
+    marginTop: 12,
+    alignSelf: 'center',
+    backgroundColor: '#d32f2f',
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+    borderRadius: 6,
+  },
+  clearButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    textAlign: 'center'
+  }
 });
