@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { StyleSheet, View, Pressable } from "react-native";
-import { TextInput, Divider, Text } from "react-native-paper";
+import { View } from "react-native";
+import {
+  TextInput,
+  Text,
+  Button,
+  Card,
+  HelperText,
+  Divider,
+} from "react-native-paper";
 
 export default function App() {
   const [cep, setCep] = useState("");
 
-  // dadosCep: null = nenhum resultado, object = dados do viacep
   const [dadosCep, setDadosCep] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,135 +48,67 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text>Digite o CEP:</Text>
       <TextInput
-        style={styles.cepInput}
         label="CEP"
-        placeholder="12345678"
+        placeholder="12345-678"
         keyboardType="numeric"
         value={cep}
         maxLength={9}
         onChangeText={(text) => setCep(text)}
       />
 
-      <Pressable onPress={() => buscaCep(cep)} style={styles.searchButton}>
-        <Text style={styles.searchButtonText}>{loading ? 'Buscando...' : 'Buscar CEP'}</Text>
-      </Pressable>
+      <Button mode="contained" onPress={() => buscaCep(cep)} disabled={loading}>
+        {loading ? "Buscando..." : "Buscar CEP"}
+      </Button>
 
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <HelperText type="error">{error}</HelperText> : null}
 
       {dadosCep ? (
-        <View style={styles.card}>
-          <TextInput
-            label="Rua"
-            value={dadosCep.logradouro ?? ""}
-            style={{ marginBottom: 10 }}
-            editable={false}
-          />
-          {/* <TextInput
-            label="Número"
-            value={dadosCep.numero ?? ""}
-            style={{ marginBottom: 10 }}
-            editable={true}
-            onChangeText={(text) => setDadosCep({ ...dadosCep, numero: text })}
-          /> */}
-          <TextInput
-            label="Bairro"
-            value={dadosCep.bairro ?? ""}
-            style={{ marginBottom: 10 }}
-            editable={false}
-          />
-          {/* <TextInput
-            label="Complemento"
-            value={dadosCep.complemento ?? ""}
-            style={{ marginBottom: 10 }}
-            editable={true}
-            onChangeText={(text) => setDadosCep({ ...dadosCep, complemento: text })}
-          /> */}
-          <TextInput
-            label="Cidade"
-            value={dadosCep.localidade ?? ""}
-            style={{ marginBottom: 10 }}
-            editable={false}
-          />
-          <TextInput
-            label="Estado"
-            value={dadosCep.uf ?? ""}
-            style={{ marginBottom: 10 }}
-            editable={false}
-          />
-
-          <Pressable
-            style={styles.clearButton}
-            onPress={() => {
-              setCep("");
-              setDadosCep(null);
-              setError("");
-            }}
-          >
-            <Text style={styles.clearButtonText}>Limpar</Text>
-          </Pressable>
-        </View>
+        <Card>
+          <Card.Content>
+            <Divider />
+            <TextInput
+              label="Logradouro"
+              value={dadosCep.logradouro ?? ""}
+              editable={false}
+            />
+            <Divider />
+            <Divider />
+            <Divider />
+            <TextInput
+              label="Bairro"
+              value={dadosCep.bairro ?? ""}
+              editable={false}
+            />
+            <Divider />
+            <TextInput
+              label="Localidade"
+              value={dadosCep.localidade ?? ""}
+              editable={false}
+            />
+            <Divider />
+            <TextInput
+              label="UF"
+              value={dadosCep.uf ?? ""}
+              editable={false}
+            />
+            <Divider />
+          </Card.Content>
+          <Card.Actions>
+            <Button
+              onPress={() => {
+                setCep("");
+                setDadosCep(null);
+                setError("");
+              }}
+            >
+              Limpar
+            </Button>
+          </Card.Actions>
+        </Card>
       ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    marginTop: 60,
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginTop: 100,
-  },
-  cepInput: {
-    height: 50,
-    width: 300,
-    marginTop: 10,
-    backgroundColor: 'white'
-  },
-  searchButton: {
-    marginTop: 12,
-    backgroundColor: '#1976D2',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 6,
-  },
-  searchButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    textAlign: 'center'
-  },
-  errorText: {
-    color: '#c62828',
-    marginTop: 8,
-  },
-  card: {
-    marginTop: 20,
-    backgroundColor: '#f2f2f2',
-    padding: 14,
-    borderRadius: 8,
-    width: 320,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  clearButton: {
-    marginTop: 12,
-    alignSelf: 'center',
-    backgroundColor: '#d32f2f',
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-    borderRadius: 6,
-  },
-  clearButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    textAlign: 'center'
-  }
-});
