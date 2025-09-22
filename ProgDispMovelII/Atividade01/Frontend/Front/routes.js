@@ -8,13 +8,17 @@ import ViewStudant from "./screens/view_studant.screen";
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {
-	return (
-		<NavigationContainer>
-			<Stack.Navigator>
-				<Stack.Screen name="StudantList" component={StudantList} options={{ title: "Estudantes" }} />
-			<Stack.Screen name="AddStudant" component={AddStudant} options={{ title: "Adicionar Estudante" }} />
-			<Stack.Screen name="ViewStudant" component={ViewStudant} options={{ title: "Visualizar Estudante" }} />
-			</Stack.Navigator>
-		</NavigationContainer>
-	);
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="StudantList" component={StudantList} />
+        <Stack.Screen name="AddStudant" component={AddStudant} />
+        <Stack.Screen name="ViewStudant" component={ViewStudant} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
