@@ -334,3 +334,57 @@ export const emptyCourseStyles = StyleSheet.create({
     fontSize: 14
   }
 });
+
+export const modalStyles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.surface,
+    margin: 20,
+    borderRadius: 16,
+    elevation: 8,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+  },
+  content: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  title: {
+    color: colors.onSurface,
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+    fontSize: 18,
+    lineHeight: 24,
+  },
+  subtitle: {
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 24,
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    borderColor: colors.primary,
+    borderWidth: 1,
+  },
+  cancelButtonText: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  confirmButton: {
+    flex: 1,
+  },
+  confirmButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+});

@@ -7,6 +7,9 @@ import {
   IconButton,
   Chip,
   Surface,
+  Modal,
+  Portal,
+  Button,
 } from "react-native-paper";
 import {
   containerStyles,
@@ -14,6 +17,7 @@ import {
   cardStyles,
   courseStyles,
   fabStyles,
+  modalStyles,
 } from "../themes/studants_light.theme";
 const {
   listStudants,
@@ -23,6 +27,10 @@ const {
 export default function StudantList({ navigation }) {
   const [studants, setStudants] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({
+    visible: false,
+    studant: null,
+  });
 
   const load = async () => {
     setLoading(true);
@@ -44,13 +52,25 @@ export default function StudantList({ navigation }) {
     return unsub;
   }, [navigation]);
 
-  const onDelete = async (id) => {
+  const handleDeletePress = (studant) => {
+    setDeleteModal({
+      visible: true,
+      studant: studant,
+    });
+  };
+
+  const confirmDelete = async () => {
     try {
-      await deleteStudant(id);
+      await deleteStudant(deleteModal.studant._id || deleteModal.studant.id);
+      setDeleteModal({ visible: false, studant: null });
       load();
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModal({ visible: false, studant: null });
   };
 
   const renderItem = ({ item }) => (
@@ -81,7 +101,7 @@ export default function StudantList({ navigation }) {
             <IconButton
               icon="delete"
               size={20}
-              onPress={() => onDelete(item._id || item.id)}
+              onPress={() => handleDeletePress(item)}
             />
           </View>
         </View>
@@ -152,6 +172,42 @@ export default function StudantList({ navigation }) {
         onPress={() => navigation.navigate("AddStudant")}
         color="#FFFFFF"
       />
+
+      <Portal>
+        <Modal
+          visible={deleteModal.visible}
+          onDismiss={cancelDelete}
+          contentContainerStyle={modalStyles.container}
+        >
+          <View style={modalStyles.content}>
+            <Text variant="titleMedium" style={modalStyles.title}>
+              Deseja mesmo excluir o aluno {deleteModal.studant?.nome || deleteModal.studant?.name}?
+            </Text>
+            <Text variant="bodySmall" style={modalStyles.subtitle}>
+              Esta ação é irreversível
+            </Text>
+            <View style={modalStyles.buttonContainer}>
+              <Button
+                mode="outlined"
+                onPress={cancelDelete}
+                style={modalStyles.cancelButton}
+                labelStyle={modalStyles.cancelButtonText}
+              >
+                Cancelar
+              </Button>
+              <Button
+                mode="contained"
+                onPress={confirmDelete}
+                style={modalStyles.confirmButton}
+                labelStyle={modalStyles.confirmButtonText}
+                buttonColor="#D32F2F"
+              >
+                Excluir
+              </Button>
+            </View>
+          </View>
+        </Modal>
+      </Portal>
     </View>
   );
 }
