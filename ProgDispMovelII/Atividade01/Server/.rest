@@ -1,4 +1,4 @@
-@baseURL = http://localhost:3000/
+@baseURL = http://192.168.50.54:3000/
 
 @userID = 68b8d90b44c2e274befb2c6a
 
@@ -8,6 +8,9 @@ GET {{baseURL}}
 
 ### GET all users
 GET {{baseURL}}users
+
+### GET all studants
+GET {{baseURL}}studants
 
 ### Get by name
 GET {{baseURL}}users/name/Murilo
