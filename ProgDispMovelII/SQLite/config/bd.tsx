@@ -40,6 +40,18 @@ async function inserirDados(
   }
 }
 
+// deleta usuario por id
+async function deletarDados(db: SQLite.SQLiteDatabase, id: number) {
+  const query = `DELETE FROM USUARIO WHERE ID_US = ?`;
+  try {
+    await db.runAsync(query, [id]);
+    console.log("Dados deletados com sucesso!");
+    return true;
+  } catch (error) {
+    console.log("Erro ao deletar dados:", error);
+  }
+}
+
 async function listarDados(db: SQLite.SQLiteDatabase) {
   const query = `SELECT * FROM USUARIO`;
   try {
@@ -51,4 +63,4 @@ async function listarDados(db: SQLite.SQLiteDatabase) {
   }
 }
 
-export { criaBanco, criaTabela, inserirDados, listarDados, };
+export { criaBanco, criaTabela, inserirDados, listarDados, deletarDados };

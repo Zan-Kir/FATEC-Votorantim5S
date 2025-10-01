@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { criaBanco, criaTabela, inserirDados, listarDados } from "./config/bd";
+import { criaBanco, criaTabela, deletarDados, inserirDados, listarDados } from "./config/bd";
 import { useEffect } from "react";
 
 export default function App() {
@@ -14,6 +14,15 @@ export default function App() {
       if(usuarios && usuarios.length > 0) {
         for (const usuario of usuarios) {
           console.log(`ID: ${usuario.ID_US}, Nome: ${usuario.NOME_US}, Email: ${usuario.EMAIL_US}`);
+        }
+      }
+      const resp = await deletarDados(db, 1);
+      if(resp) {
+        const usuariosAtualizados = await listarDados(db);
+        if(usuariosAtualizados && usuariosAtualizados.length > 0) {
+          for (const usuario of usuariosAtualizados) {
+            console.log(`ID: ${usuario.ID_US}, Nome: ${usuario.NOME_US}, Email: ${usuario.EMAIL_US}`);
+          }
         }
       }
     } else {
