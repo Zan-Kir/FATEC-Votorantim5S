@@ -52,6 +52,17 @@ async function deletarDados(db: SQLite.SQLiteDatabase, id: number) {
   }
 }
 
+// atualiza usuario por id
+async function atualizarDados(db: SQLite.SQLiteDatabase, id: number, nome: string, email: string) {
+  const query = `UPDATE USUARIO SET NOME_US = ?, EMAIL_US = ? WHERE ID_US = ?`;
+  try {
+    await db.runAsync(query, [nome, email, id]);
+    console.log("Dados atualizados com sucesso!");
+  } catch (error) {
+    console.log("Erro ao atualizar dados:", error);
+  }
+}
+
 async function listarDados(db: SQLite.SQLiteDatabase) {
   const query = `SELECT * FROM USUARIO`;
   try {
@@ -63,4 +74,4 @@ async function listarDados(db: SQLite.SQLiteDatabase) {
   }
 }
 
-export { criaBanco, criaTabela, inserirDados, listarDados, deletarDados };
+export { criaBanco, criaTabela, inserirDados, listarDados, deletarDados, atualizarDados };
