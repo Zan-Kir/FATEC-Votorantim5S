@@ -1,6 +1,5 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import sklearn
+import tensorflow as tf
+from tensorflow import keras
 
-print('test')
+print("TensorFlow version:", tf.__version__)
+print("Keras version:", keras.__version__)
